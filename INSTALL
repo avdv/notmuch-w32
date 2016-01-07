@@ -1,5 +1,15 @@
 Build and install instructions for Notmuch.
 
+This branch uses GNU Autotools for the build.
+
+E.g.:
+
+````
+automake
+autoconf
+./configure --host=i486-mingw32 --target=i486-mingw32
+````
+
 Compilation commands
 --------------------
 The process for compiling and installing Notmuch is the very standard

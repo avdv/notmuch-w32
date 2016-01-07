@@ -36,12 +36,14 @@ debugger_is_active (void)
     if (RUNNING_ON_VALGRIND)
 	return TRUE;
 
+#if !defined(_WIN32) || defined(__CYGWIN__)
     sprintf (buf, "/proc/%d/exe", getppid ());
     if (readlink (buf, buf, sizeof (buf)) != -1 &&
 	strncmp (basename (buf), "gdb", 3) == 0)
     {
 	return TRUE;
     }
+#endif
 
     return FALSE;
 }

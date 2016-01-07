@@ -18,6 +18,7 @@
  * Author: Carl Worth <cworth@cworth.org>
  */
 
+#include <config.h>
 #include <stdio.h>
 #include <string.h>
 

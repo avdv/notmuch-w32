@@ -22,12 +22,14 @@
 
 #include "notmuch-client.h"
 #include <sys/wait.h>
+#include "execute.h"
 
 int
 notmuch_run_hook (const char *db_path, const char *hook)
 {
     char *hook_path;
     int status = 0;
+    char* argv[] = { NULL };
     pid_t pid;
 
     hook_path = talloc_asprintf (NULL, "%s/%s/%s/%s", db_path, ".notmuch",
@@ -43,13 +45,15 @@ notmuch_run_hook (const char *db_path, const char *hook)
 	 * notmuch dir. Dangling symbolic links also result in ENOENT, but
 	 * we'll ignore that too for simplicity. */
 	if (errno != ENOENT) {
-	    fprintf (stderr, "Error: %s hook access failed: %s\n", hook,
+	    fprintf (stderr, "Error: %s hook (%s) access failed: %s\n", hook,
+	             hook_path,
 		     strerror (errno));
 	    status = 1;
 	}
 	goto DONE;
     }
 
+#ifdef HAVE_FORK
     pid = fork();
     if (pid == -1) {
 	fprintf (stderr, "Error: %s hook fork failed: %s\n", hook,
@@ -74,6 +78,9 @@ notmuch_run_hook (const char *db_path, const char *hook)
 	status = 1;
 	goto DONE;
     }
+#else
+    status = execute ("pre-hook", hook_path, argv, 0, 1, 1, 0, 1, 0, NULL);
+#endif
 
     if (!WIFEXITED (status) || WEXITSTATUS (status)) {
 	if (WIFEXITED (status)) {

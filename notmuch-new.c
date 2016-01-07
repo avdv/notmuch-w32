@@ -624,6 +624,7 @@ add_files (notmuch_database_t *notmuch,
 static void
 setup_progress_printing_timer (void)
 {
+#ifdef HAVE_SETITIMER
     struct sigaction action;
     struct itimerval timerval;
 
@@ -640,11 +641,13 @@ setup_progress_printing_timer (void)
     timerval.it_value.tv_sec = 1;
     timerval.it_value.tv_usec = 0;
     setitimer (ITIMER_REAL, &timerval, NULL);
+#endif
 }
 
 static void
 stop_progress_printing_timer (void)
 {
+#ifdef HAVE_SETITIMER
     struct sigaction action;
     struct itimerval timerval;
 
@@ -658,6 +661,7 @@ stop_progress_printing_timer (void)
     /* And disable the signal handler. */
     action.sa_handler = SIG_IGN;
     sigaction (SIGALRM, &action, NULL);
+#endif
 }
 
 

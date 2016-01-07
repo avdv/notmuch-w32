@@ -18,11 +18,16 @@
  * Author: Carl Worth <cworth@cworth.org>
  */
 
+#include <config.h>
 #include "notmuch-client.h"
 
-#include <pwd.h>
+#ifdef HAVE_PWD_H
+#  include <pwd.h>
+#endif
 #include <netdb.h>
 #include <assert.h>
+
+#include "canonicalize.h"
 
 static const char toplevel_config_comment[] =
     " .notmuch-config - Configuration file for the notmuch mail system\n"
@@ -132,6 +137,7 @@ notmuch_config_destructor (notmuch_config_t *config)
 static char *
 get_name_from_passwd_file (void *ctx)
 {
+#ifdef HAVE_PWD_H
     long pw_buf_size;
     char *pw_buf;
     struct passwd passwd, *ignored;
@@ -162,11 +168,15 @@ get_name_from_passwd_file (void *ctx)
     talloc_free (pw_buf);
 
     return name;
+#else
+    return talloc_strdup (ctx, "");
+#endif
 }
 
 static char *
 get_username_from_passwd_file (void *ctx)
 {
+#ifdef HAVE_PWD_H
     long pw_buf_size;
     char *pw_buf;
     struct passwd passwd, *ignored;
@@ -191,6 +201,9 @@ get_username_from_passwd_file (void *ctx)
     talloc_free (pw_buf);
 
     return name;
+#else
+    return talloc_strdup (ctx, "");
+#endif
 }
 
 /* Open the named notmuch configuration file. If the filename is NULL,
@@ -454,22 +467,7 @@ notmuch_config_save (notmuch_config_t *config)
     }
 
     /* Try not to overwrite symlinks. */
-    filename = realpath (config->filename, NULL);
-    if (! filename) {
-	if (errno == ENOENT) {
-	    filename = strdup (config->filename);
-	    if (! filename) {
-		fprintf (stderr, "Out of memory.\n");
-		g_free (data);
-		return 1;
-	    }
-	} else {
-	    fprintf (stderr, "Error canonicalizing %s: %s\n", config->filename,
-		     strerror (errno));
-	    g_free (data);
-	    return 1;
-	}
-    }
+    filename = canonicalize_filename_mode (config->filename, CAN_MISSING);
 
     if (! g_file_set_contents (filename, data, length, &error)) {
 	if (strcmp (filename, config->filename) != 0) {
@@ -704,7 +702,7 @@ _item_split (char *item, char **group, char **key)
 
     *group = item;
 
-    period = index (item, '.');
+    period = strchr (item, '.');
     if (period == NULL || *(period+1) == '\0') {
 	fprintf (stderr,
 		 "Invalid configuration name: %s\n"

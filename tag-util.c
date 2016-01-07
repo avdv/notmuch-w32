@@ -1,3 +1,4 @@
+#include <config.h>
 #include <assert.h>
 #include "string-util.h"
 #include "tag-util.h"

@@ -17,6 +17,7 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
+#include <config.h>
 #include "gmime-filter-headers.h"
 #include <string.h>
 #include <gmime/gmime-utils.h>

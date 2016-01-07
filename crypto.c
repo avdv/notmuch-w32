@@ -18,6 +18,7 @@
  * Authors: Jameson Rollins <jrollins@finestructure.net>
  */
 
+#include <config.h>
 #include "notmuch-client.h"
 
 #ifdef GMIME_ATLEAST_26

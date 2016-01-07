@@ -870,7 +870,9 @@ notmuch_database_upgrade (notmuch_database_t *notmuch,
 {
     Xapian::WritableDatabase *db;
     struct sigaction action;
+#ifdef HAVE_SETITIMER
     struct itimerval timerval;
+#endif
     notmuch_bool_t timer_is_active = FALSE;
     unsigned int version;
     notmuch_status_t status;
@@ -888,6 +890,7 @@ notmuch_database_upgrade (notmuch_database_t *notmuch,
 	return NOTMUCH_STATUS_SUCCESS;
 
     if (progress_notify) {
+#ifdef HAVE_SETITIMER
 	/* Setup our handler for SIGALRM */
 	memset (&action, 0, sizeof (struct sigaction));
 	action.sa_handler = handle_sigalrm;
@@ -903,6 +906,7 @@ notmuch_database_upgrade (notmuch_database_t *notmuch,
 	setitimer (ITIMER_REAL, &timerval, NULL);
 
 	timer_is_active = TRUE;
+#endif
     }
 
     /* Before version 1, each message document had its filename in the
@@ -1047,6 +1051,7 @@ notmuch_database_upgrade (notmuch_database_t *notmuch,
     }
 
     if (timer_is_active) {
+#ifdef HAVE_SETITIMER
 	/* Now stop the timer. */
 	timerval.it_interval.tv_sec = 0;
 	timerval.it_interval.tv_usec = 0;
@@ -1057,6 +1062,7 @@ notmuch_database_upgrade (notmuch_database_t *notmuch,
 	/* And disable the signal handler. */
 	action.sa_handler = SIG_IGN;
 	sigaction (SIGALRM, &action, NULL);
+#endif
     }
 
     return NOTMUCH_STATUS_SUCCESS;

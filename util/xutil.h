@@ -21,6 +21,7 @@
 #ifndef NOTMUCH_XUTIL_H
 #define NOTMUCH_XUTIL_H
 
+#include <config.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <regex.h>

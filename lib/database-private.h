@@ -21,6 +21,8 @@
 #ifndef NOTMUCH_DATABASE_PRIVATE_H
 #define NOTMUCH_DATABASE_PRIVATE_H
 
+#include <config.h>
+
 /* According to WG14/N1124, a C++ implementation won't provide us a
  * macro like PRIx64 (which gives a printf format string for
  * formatting a uint64_t as hexadecimal) unless we define

@@ -796,7 +796,7 @@ format_part_mbox (const void *ctx, unused (sprinter_t *sp), mime_node_t *node,
 
     date = notmuch_message_get_date (message);
     gmtime_r (&date, &date_gmtime);
-    asctime_r (&date_gmtime, date_asctime);
+    strftime (date_asctime, sizeof date_asctime, "%a %b %d %H:%M:%S %Y", &date_gmtime);
 
     printf ("From %s %s", from, date_asctime);
 

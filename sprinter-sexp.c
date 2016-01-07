@@ -18,6 +18,7 @@
  * Author: Peter Feigl <peter.feigl@gmx.at>
  */
 
+#include <config.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <talloc.h>

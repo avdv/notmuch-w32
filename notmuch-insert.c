@@ -21,12 +21,14 @@
  * Author: Peter Wang <novalazy@gmail.com>
  */
 
+#include <config.h>
 #include "notmuch-client.h"
 #include "tag-util.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 static volatile sig_atomic_t interrupted;
 
